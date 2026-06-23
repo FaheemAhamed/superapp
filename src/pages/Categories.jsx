@@ -31,20 +31,20 @@ export default function Categories() {
   const canContinue = categories.length >= 3;
 
   return (
-    <div className="min-h-[100dvh] bg-[#000000] text-white p-5 md:p-12 xl:p-0 font-sans flex items-center justify-center">
-      <div className="w-full max-w-[1728px] px-0 md:px-8 xl:px-[122px] mx-auto flex flex-col lg:flex-row gap-6 lg:gap-16 items-start lg:items-center justify-between">
+    <div className="min-h-[100dvh] bg-[#000000] text-white p-5 md:p-8 xl:py-4 font-sans flex items-center justify-center">
+      <div className="w-full max-w-[1728px] px-4 md:px-8 xl:px-[122px] mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8 items-start lg:items-center justify-between">
         
         {/* Left Side */}
         <div className="w-full lg:w-[40%] flex flex-col justify-center">
-          <h2 className="brand-title text-4xl md:text-6xl mb-4 md:mb-12 text-[#11b800]">Super app</h2>
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.2] tracking-wide mb-5 md:mb-12">
+          <h2 className="brand-title text-4xl md:text-6xl mb-2 md:mb-4 lg:mb-6 text-[#11b800]">Super app</h2>
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.2] tracking-wide mb-3 md:mb-6">
             Choose your <br />
             entertainment <br />
             category
           </h1>
 
           {activeUser && (
-            <div className="flex flex-wrap gap-2 md:gap-4 min-h-[36px] mb-4 md:mb-8">
+            <div className="flex flex-wrap gap-2 md:gap-3 min-h-[36px] mb-3 md:mb-4">
               {categories.map((c) => (
                 <div
                   key={c}
@@ -69,7 +69,7 @@ export default function Categories() {
 
         {/* Right Side */}
         <div className="w-full lg:w-[60%] flex flex-col items-center lg:items-end pb-24 md:pb-0">
-          <div className="grid grid-cols-3 gap-3 md:gap-6 lg:gap-8 w-full max-w-[950px]">
+          <div className="grid grid-cols-3 gap-3 md:gap-4 lg:gap-5 w-full max-w-[800px]">
             {CATEGORIES.map((cat) => {
               const selected = categories.includes(cat.name);
               return (
@@ -84,7 +84,7 @@ export default function Categories() {
           </div>
 
           {/* Desktop continue button */}
-          <div className="hidden md:flex mt-10 w-full max-w-[850px] justify-end">
+          <div className="hidden md:flex mt-6 w-full max-w-[800px] justify-end">
             <button
                onClick={() => navigate("/dashboard")}
                disabled={!canContinue}

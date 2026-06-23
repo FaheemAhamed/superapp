@@ -85,6 +85,27 @@
     background-color: var(--color-brand-green);
     color: #fff;
   }
+
+  /* Custom styled thin scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #272727;
+    border-radius: 9999px;
+    border: 1px solid #111;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #72db73;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #272727 #000000;
+  }
 }
 
 @utility brand-title {

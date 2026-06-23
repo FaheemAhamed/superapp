@@ -40,14 +40,14 @@ export default function RegistrationForm() {
   const currentErrors = touched ? errors : {};
 
   const inputCls = (hasError) =>
-    `w-full rounded-md bg-[#292929] text-white placeholder:text-[#7c7c7c] px-4 py-3.5 text-sm outline-none border transition-all duration-300 ${
+    `w-full rounded-md bg-[#292929] text-white placeholder:text-[#7c7c7c] px-4 py-2.5 text-sm outline-none border transition-all duration-300 ${
       hasError 
         ? "border-[#e61e32]" 
         : "border-transparent focus:border-[#11b800]"
     }`;
 
   return (
-    <form onSubmit={onSubmit} className="w-full space-y-4">
+    <form onSubmit={onSubmit} className="w-full space-y-3">
       {["name", "username", "email", "mobile", "password"].map((field) => {
         const placeholder = {
           name: "Name",
@@ -72,7 +72,7 @@ export default function RegistrationForm() {
         );
       })}
 
-      <label className="flex items-center gap-3 mt-4 text-sm text-[#7c7c7c] cursor-pointer">
+      <label className="flex items-center gap-3 mt-2 text-sm text-[#7c7c7c] cursor-pointer">
         <input
           type="checkbox"
           checked={agree}
@@ -85,17 +85,17 @@ export default function RegistrationForm() {
         <p className="mt-1 text-xs text-[#e61e32] font-medium">{currentErrors.terms}</p>
       )}
 
-      <div className="pt-4">
+      <div className="pt-2">
         <motion.button
           whileTap={{ scale: 0.97 }}
           type="submit"
-          className="w-full rounded-full bg-[#72db73] hover:bg-[#11b800] py-4 font-bold text-white tracking-wide text-lg transition-colors"
+          className="w-full rounded-full bg-[#72db73] hover:bg-[#11b800] py-3.5 font-bold text-white tracking-wide text-lg transition-colors"
         >
           SIGN UP
         </motion.button>
       </div>
 
-      <div className="mt-6 space-y-4">
+      <div className="mt-4 space-y-2">
         <p className="text-[12px] text-[#7c7c7c] leading-relaxed">
           By clicking on Sign up, you agree to Superapp{" "}
           <span className="text-[#72db73] cursor-pointer">Terms and Conditions of Use</span>
@@ -106,7 +106,7 @@ export default function RegistrationForm() {
           <span className="text-[#72db73] cursor-pointer">Privacy Policy</span>
         </p>
 
-        <p className="text-center text-sm text-[#7c7c7c] pt-4">
+        <p className="text-center text-sm text-[#7c7c7c] pt-2">
           Already have an account?{" "}
           <Link to="/login" className="text-[#72db73] font-bold hover:underline transition-colors">Log in</Link>
         </p>
