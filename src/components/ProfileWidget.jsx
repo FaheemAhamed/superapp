@@ -24,17 +24,17 @@ export default function ProfileWidget() {
         />
       </div>
 
-      {/* Text Info */}
-      <div className="absolute left-[327.24px] top-[82.69px] w-[154.82px] h-[31.67px] text-white text-[36.95px] font-normal leading-[103.19%] tracking-[0.02em]">
-        {activeUser?.name || "KK Vinay"}
-      </div>
-      
-      <div className="absolute left-[327.24px] top-[140.75px] w-[372.99px] h-[31.67px] text-white text-[36.95px] font-normal leading-[103.69%] tracking-[0.02em]">
-        {activeUser?.email || "Vinay090@gmail.com"}
-      </div>
-
-      <div className="absolute left-[327.24px] top-[198.81px] w-[307.89px] h-[49.26px] text-white text-[72.13px] font-medium leading-[66.19%] tracking-[0.02em]">
-        {activeUser?.username || "vinay060"}
+      {/* Text Info Container */}
+      <div className="absolute left-[327.24px] top-[78px] w-[500px] flex flex-col gap-[14px] text-white">
+        <div className="text-[36.95px] font-normal leading-tight tracking-[0.02em] truncate">
+          {activeUser?.name || "KK Vinay"}
+        </div>
+        <div className="text-[36.95px] font-normal leading-tight tracking-[0.02em] truncate">
+          {activeUser?.email || "Vinay090@gmail.com"}
+        </div>
+        <div className="text-[72.13px] font-medium leading-[1.1] tracking-[0.02em] truncate">
+          {activeUser?.username || "vinay060"}
+        </div>
       </div>
 
       {/* Dynamic Categories — flex-wrap, auto-grows */}

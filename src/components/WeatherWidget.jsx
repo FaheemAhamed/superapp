@@ -1,5 +1,6 @@
 import { CloudRain, Wind, Drop, Thermometer, Sun, Cloud, CloudSnow, CloudLightning, SpinnerGap } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
+import { fetchWeatherData } from "@/services/weatherApi";
 
 const WeatherIcon = ({ condition }) => {
   const main = condition?.toLowerCase() || '';
@@ -27,17 +28,8 @@ export default function WeatherWidget() {
         const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
         if (!apiKey) throw new Error("Missing API Key");
         
-        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
-        if (!res.ok) throw new Error("API error");
-        
-        const json = await res.json();
-        setData({
-          temp: Math.round(json.main.temp),
-          pressure: json.main.pressure,
-          humidity: json.main.humidity,
-          wind: (json.wind.speed * 3.6).toFixed(1), // convert m/s to km/h
-          condition: json.weather[0].main,
-        });
+        const weatherData = await fetchWeatherData(lat, lon, apiKey);
+        setData(weatherData);
       } catch(e) {
         console.error("Weather fetch failed:", e);
         setData({

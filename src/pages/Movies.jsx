@@ -1,8 +1,11 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useStore } from "@/store/useStore";
-import { X, Star, SpinnerGap } from "@phosphor-icons/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { SpinnerGap } from "@phosphor-icons/react";
+import { AnimatePresence, motion } from "framer-motion";
+import { fetchMoviesByCategory, fetchMovieDetails } from "@/services/movieApi";
+import MovieCard from "@/components/MovieCard";
+import MovieModal from "@/components/MovieModal";
 
 export default function Movies() {
   const { activeUser, categories, setCategories, logout } = useStore();
@@ -27,26 +30,14 @@ export default function Movies() {
     if (categories.length === 0) return;
     const fetchAll = async () => {
       setLoading(true);
-      let apiKeyUrl = import.meta.env.VITE_OMDB_API_KEY || "";
-      let apiKey = "622e6ff1"; 
-      const match = apiKeyUrl.match(/apikey=([^&"]+)/);
-      if (match) apiKey = match[1];
-
-      const results = {};
-      for (const cat of categories) {
-        try {
-          // Fetch movies matching the category
-          const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(cat)}&type=movie&apikey=${apiKey}`);
-          const data = await res.json();
-          if (data.Search) {
-            results[cat] = data.Search.slice(0, 4); // Only need 4 per row
-          }
-        } catch (e) {
-          console.error(`Failed to fetch OMDB for ${cat}`, e);
-        }
+      try {
+        const results = await fetchMoviesByCategory(categories);
+        setMoviesByCat(results);
+      } catch (e) {
+        console.error("Failed to fetch movies by category:", e);
+      } finally {
+        setLoading(false);
       }
-      setMoviesByCat(results);
-      setLoading(false);
     };
     fetchAll();
   }, [categories]);
@@ -55,21 +46,22 @@ export default function Movies() {
   useEffect(() => {
     if (!selectedMovie) return;
     setMovieDetails(null);
-    let apiKeyUrl = import.meta.env.VITE_OMDB_API_KEY || "";
-    let apiKey = "622e6ff1"; 
-    const match = apiKeyUrl.match(/apikey=([^&"]+)/);
-    if (match) apiKey = match[1];
-
-    fetch(`https://www.omdbapi.com/?i=${selectedMovie.imdbID}&apikey=${apiKey}`)
-      .then(r => r.json())
-      .then(data => setMovieDetails(data))
-      .catch(console.error);
+    const fetchDetails = async () => {
+      try {
+        const details = await fetchMovieDetails(selectedMovie.imdbID);
+        setMovieDetails(details);
+      } catch (e) {
+        console.error("Failed to fetch movie details:", e);
+      }
+    };
+    fetchDetails();
   }, [selectedMovie]);
 
   // Screen scaling logic
   useEffect(() => {
     const handleResize = () => {
       const scaleX = window.innerWidth / 1728;
+      const scaleY = window.innerHeight / 1117;
       setScale(Math.min(scaleX, 1));
     };
     handleResize();
@@ -132,22 +124,14 @@ export default function Movies() {
             <div key={cat} className="flex flex-col gap-3">
               <h2 className="text-[#878787] text-base font-semibold uppercase tracking-widest">{cat}</h2>
               <div className="grid grid-cols-2 gap-3">
-                {moviesByCat[cat].map((m) => {
-                  const poster = m.Poster !== "N/A" ? m.Poster : "https://via.placeholder.com/400x600.png?text=No+Poster";
-                  return (
-                    <div 
-                      key={m.imdbID}
-                      className="relative rounded-xl overflow-hidden cursor-pointer active:scale-95 transition-transform shadow-lg aspect-video"
-                      onClick={() => setSelectedMovie(m)}
-                    >
-                      <img src={poster} alt={m.Title} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-2">
-                        <p className="text-white font-semibold text-xs leading-tight line-clamp-2">{m.Title}</p>
-                        <p className="text-[#878787] text-xs">{m.Year}</p>
-                      </div>
-                    </div>
-                  );
-                })}
+                {moviesByCat[cat].map((m) => (
+                  <MovieCard
+                    key={m.imdbID}
+                    movie={m}
+                    variant="mobile"
+                    onClick={() => setSelectedMovie(m)}
+                  />
+                ))}
               </div>
             </div>
           ))
@@ -235,121 +219,32 @@ export default function Movies() {
                     {cat}
                   </div>
                   
-                  {moviesByCat[cat].map((m, j) => {
-                    const poster = m.Poster !== "N/A" ? m.Poster : "https://via.placeholder.com/400x600.png?text=No+Poster";
-                    return (
-                      <div 
-                        key={m.imdbID}
-                        className="absolute cursor-pointer hover:scale-105 transition-all duration-300 transform-gpu overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
-                        style={{ 
-                          left: `${cols[j]}px`, 
-                          top: `${imageTop}px`,
-                          width: '342px',
-                          height: '192px',
-                          borderRadius: '10px'
-                        }}
-                        onClick={() => setSelectedMovie(m)}
-                      >
-                        <img 
-                          src={poster} 
-                          alt={m.Title}
-                          className="w-full h-full object-cover"
-                        />
-                        {/* Subtle overlay for the title on hover to make it usable */}
-                      <div className="absolute inset-0 bg-black/70 opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                        <p className="text-white font-bold text-xl leading-tight line-clamp-2">{m.Title}</p>
-                        <div className="flex items-center gap-1 mt-1 text-[#f1c75b] text-sm font-medium">
-                          <span>{m.Year}</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })
-        )}
+                  {moviesByCat[cat].map((m, j) => (
+                    <MovieCard
+                      key={m.imdbID}
+                      movie={m}
+                      variant="desktop"
+                      style={{ 
+                        left: `${cols[j]}px`, 
+                        top: `${imageTop}px`
+                      }}
+                      onClick={() => setSelectedMovie(m)}
+                    />
+                  ))}
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
-    </div>
 
       {/* Detail Modal Overlay */}
-      <AnimatePresence>
-        {selectedMovie && (
-          <div className="fixed inset-0 z-50 grid place-items-center p-4 md:p-10 perspective-[1000px]">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer"
-              onClick={() => setSelectedMovie(null)}
-            />
-            
-            <motion.div
-              initial={{ opacity: 0, y: 50, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-[#181d37] border border-white/10 shadow-[0_40px_100px_-20px_rgba(0,0,0,1)] rounded-3xl max-w-4xl w-full overflow-hidden flex flex-col md:flex-row relative z-10"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="w-full md:w-[350px] shrink-0 relative h-64 md:h-auto bg-black">
-                <img 
-                  src={selectedMovie.Poster !== "N/A" ? selectedMovie.Poster : "https://via.placeholder.com/400x600.png?text=No+Poster"} 
-                  alt="" 
-                  className="w-full h-full object-contain md:object-cover" 
-                />
-              </div>
-              
-              <div className="p-8 md:p-12 relative flex-1 flex flex-col justify-center font-sans min-h-[400px]">
-                <button
-                  onClick={() => setSelectedMovie(null)}
-                  className="absolute top-6 right-6 text-white/50 hover:text-white bg-white/5 rounded-full p-2 transition-colors hover:rotate-90 hover:scale-110 transform"
-                >
-                  <X weight="bold" size={20} />
-                </button>
-                
-                <h3 className="text-4xl md:text-5xl font-bold tracking-tight text-white">{selectedMovie.Title}</h3>
-                
-                {!movieDetails ? (
-                   <div className="flex items-center mt-6 text-[#72DB73] font-medium gap-2">
-                     <SpinnerGap className="animate-spin" size={24} /> Fetching Details...
-                   </div>
-                ) : (
-                  <>
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-[#878787] mt-4 font-medium">
-                      <span className="bg-white/10 text-white px-3 py-1 rounded-full text-xs">{movieDetails.Year}</span>
-                      <span>{movieDetails.Runtime}</span>
-                      <span className="border border-[#878787] px-2 py-0.5 rounded text-xs">{movieDetails.Rated}</span>
-                      <div className="flex items-center gap-1 text-[#f1c75b]">
-                        <Star weight="fill" size={14} />
-                        <span className="text-white/90">{movieDetails.imdbRating}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-8">
-                      <span className="inline-block text-xs font-bold text-[#72DB73] tracking-wider uppercase mb-3">
-                        {movieDetails.Genre}
-                      </span>
-                      <p className="text-base md:text-lg text-[#d9d9d9] leading-relaxed max-w-prose line-clamp-4">
-                        {movieDetails.Plot}
-                      </p>
-                      <div className="mt-8 pt-6 border-t border-white/10">
-                        <p className="text-sm font-medium text-[#878787]">
-                          <span className="text-white/60 uppercase tracking-widest text-xs block mb-1">Director</span> 
-                          {movieDetails.Director}
-                        </p>
-                        <p className="text-sm font-medium text-[#878787] mt-3">
-                          <span className="text-white/60 uppercase tracking-widest text-xs block mb-1">Starring</span> 
-                          {movieDetails.Actors}
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <MovieModal
+        isOpen={selectedMovie !== null}
+        onClose={() => setSelectedMovie(null)}
+        movie={selectedMovie}
+        details={movieDetails}
+      />
     </div>
   );
 }

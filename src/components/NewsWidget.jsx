@@ -1,5 +1,33 @@
 import { useState, useEffect } from "react";
 import { SpinnerGap } from "@phosphor-icons/react";
+import { fetchNewsData } from "@/services/newsApi";
+
+const FALLBACK_NEWS = [
+  {
+    title: "SpaceX Starship Prepares for Next Historic Orbital Flight Test",
+    image_url: "https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?auto=format&fit=crop&w=800&q=80",
+    pubDate: new Date().toISOString(),
+    description: "SpaceX is completing final preparations for the next orbital launch of Starship, the largest and most powerful space booster ever built. Engineers have implemented several improvements to the stage separation mechanism and thermal protection tiles based on data from previous test flights."
+  },
+  {
+    title: "New AI Developments Promise Breakthroughs in Medical Diagnostics",
+    image_url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
+    pubDate: new Date().toISOString(),
+    description: "Researchers have unveiled a new class of deep learning models capable of identifying rare cardiovascular anomalies from standard ultrasound scans with over 98% accuracy. This breakthrough could drastically reduce diagnostic times in emergency care facilities globally."
+  },
+  {
+    title: "Global Renewable Energy Generation Reaches Historic Highs in 2025",
+    image_url: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80",
+    pubDate: new Date().toISOString(),
+    description: "Wind and solar energy generation have expanded at a record-breaking pace over the last twelve months, now accounting for over 35% of the world's total electricity production. Experts predict that if the current rate of infrastructure growth continues, coal-fired plants will be phased out sooner than expected."
+  },
+  {
+    title: "Mysterious Deep-Ocean Ecosystem Discovered Near Mariana Trench",
+    image_url: "https://images.unsplash.com/photo-1682687220063-4742bd7fd538?auto=format&fit=crop&w=800&q=80",
+    pubDate: new Date().toISOString(),
+    description: "Marine biologists exploring uncharted hydrothermal vents near the Mariana Trench have cataloged dozens of previously unknown species, including bioluminescent organisms and unique chemosynthetic bacteria that thrive in extreme temperatures and high pressure."
+  }
+];
 
 export default function NewsWidget() {
   const [newsList, setNewsList] = useState([]);
@@ -10,27 +38,9 @@ export default function NewsWidget() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        let apiKey = import.meta.env.VITE_NEWS_API_KEY;
-        if (!apiKey) throw new Error("Missing API Key");
-        
-        // Remove quotes if any are present in the env file
-        apiKey = apiKey.replace(/['"]/g, '');
-
-        const res = await fetch(`https://newsdata.io/api/1/news?apikey=${apiKey}&language=en&image=1`);
-        if (!res.ok) throw new Error("API error");
-        
-        const json = await res.json();
-        if (json.results && json.results.length > 0) {
-          // Keep articles that actually have an image
-          const articles = json.results.filter(a => a.image_url && a.title);
-          if (articles.length > 0) {
-            setNewsList(articles);
-          } else {
-            setNewsList(json.results); // Fallback to all if none have images
-          }
-        } else {
-          throw new Error("No news found");
-        }
+        const apiKey = import.meta.env.VITE_NEWS_API_KEY;
+        const articles = await fetchNewsData(apiKey, FALLBACK_NEWS);
+        setNewsList(articles);
       } catch (e) {
         console.error("News fetch failed:", e);
         setError(true);
@@ -112,7 +122,7 @@ export default function NewsWidget() {
       <div className="absolute left-[124px] top-[515px] w-[13px] h-0 border-[2px] border-white origin-left rotate-90"></div>
 
       {/* Paragraph Text */}
-      <div className="absolute left-[42px] top-[579px] w-[380px] h-[300px] text-[#272727] text-[18.25px] font-normal leading-[161.69%] text-justify line-clamp-[10] text-ellipsis overflow-hidden">
+      <div className="absolute left-[34px] top-[579px] w-[395px] h-[300px] text-[#333333] text-[22px] font-normal leading-[150%] text-left line-clamp-[8] text-ellipsis overflow-hidden">
         {textContent}
       </div>
 

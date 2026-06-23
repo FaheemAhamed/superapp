@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useStore } from "@/store/useStore";
 import { WarningCircle } from "@phosphor-icons/react";
+import CategoryCard from "@/components/CategoryCard";
 
 const CATEGORIES = [
   { name: "Action", bg: "#FF5209", img: "https://images.unsplash.com/photo-1518929458119-e5bf444c30f4?auto=format&fit=crop&w=400&q=70" },
@@ -9,7 +10,7 @@ const CATEGORIES = [
   { name: "Thriller", bg: "#84C2FF", img: "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?auto=format&fit=crop&w=400&q=70" },
   { name: "Western", bg: "#902500", img: "https://images.unsplash.com/photo-1533450718592-29d45635f0a9?auto=format&fit=crop&w=400&q=70" },
   { name: "Horror", bg: "#7358FF", img: "https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=400&q=70" },
-  { name: "Fantasy", bg: "#FF4ADE", img: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=400&q=70" }, // Fixed broken image
+  { name: "Fantasy", bg: "#FF4ADE", img: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=400&q=70" },
   { name: "Music", bg: "#E61E32", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=70" },
   { name: "Fiction", bg: "#6CD061", img: "https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&w=400&q=70" },
 ];
@@ -68,23 +69,16 @@ export default function Categories() {
 
         {/* Right Side */}
         <div className="w-full lg:w-[60%] flex flex-col items-center lg:items-end pb-24 md:pb-0">
-          <div className="grid grid-cols-3 md:grid-cols-3 gap-3 md:gap-6 lg:gap-8 w-full max-w-[950px]">
+          <div className="grid grid-cols-3 gap-3 md:gap-6 lg:gap-8 w-full max-w-[950px]">
             {CATEGORIES.map((cat) => {
               const selected = categories.includes(cat.name);
               return (
-                <button
+                <CategoryCard
                   key={cat.name}
+                  cat={cat}
+                  selected={selected}
                   onClick={() => toggle(cat.name)}
-                  style={{ backgroundColor: cat.bg }}
-                  className={`relative rounded-[14px] md:rounded-[20px] p-3 md:p-[20px] text-left w-full aspect-square md:aspect-[250/251] flex flex-col justify-between transition-all ${
-                    selected ? "border-[4px] md:border-[6px] border-[#11b800]" : "border-[4px] md:border-[6px] border-transparent"
-                  }`}
-                >
-                  <div className="font-bold text-white text-sm md:text-[28px] z-10 tracking-wide leading-none">{cat.name}</div>
-                  <div className="rounded-[8px] md:rounded-[11.66px] overflow-hidden w-full h-[60px] md:h-[118px] mt-auto">
-                    <img src={cat.img} alt={cat.name} className="w-full h-full object-cover" />
-                  </div>
-                </button>
+                />
               );
             })}
           </div>
