@@ -4,6 +4,8 @@
 
 Instead of switching between multiple applications to check the weather, read the news, take notes, set timers, and discover movies, The Super App brings all these experiences into one premium, dynamic interface.
 
+**Live Demo:** [https://superapp-lilac-xi.vercel.app/](https://superapp-lilac-xi.vercel.app/)
+
 ---
 
 ## 🚀 Features
