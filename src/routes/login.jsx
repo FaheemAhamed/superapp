@@ -2,6 +2,7 @@ import { useNavigate, Link, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { useStore } from "@/store/useStore";
 import { motion } from "framer-motion";
+import loginBg from "@/assets/login page.png";
 
 
 export default function Login() {
@@ -40,7 +41,7 @@ export default function Login() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url(src\assets\login page.png)",
+            backgroundImage: `url(${loginBg})`,
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />

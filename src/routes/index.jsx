@@ -2,6 +2,7 @@ import { useNavigate, Link, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { useStore } from "@/store/useStore";
 import { motion } from "framer-motion";
+import loginBg from "@/assets/login page.png";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ export default function Register() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('https://picsum.photos/1400/1000?random=1')",
+            backgroundImage: `url(${loginBg})`,
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
